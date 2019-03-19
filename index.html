@@ -393,6 +393,201 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wumingsheng.github.io/2019/03/19/SpringBoot使用prometheus监控/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wumingsheng">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="woms">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/19/SpringBoot使用prometheus监控/" class="post-title-link" itemprop="url">SpringBoot使用prometheus监控</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-19 11:38:19 / 修改时间：11:53:36" itemprop="dateCreated datePublished" datetime="2019-03-19T11:38:19+08:00">2019-03-19</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="SpringBoot使用prometheus监控"><a href="#SpringBoot使用prometheus监控" class="headerlink" title="SpringBoot使用prometheus监控"></a>SpringBoot使用prometheus监控</h1><p>本文介绍SpringBoot如何使用Prometheus配合Grafana监控。</p>
+<h2 id="1-关于Prometheus"><a href="#1-关于Prometheus" class="headerlink" title="1.关于Prometheus"></a>1.关于Prometheus</h2><p>Prometheus是一个根据应用的metrics来进行监控的开源工具。相信很多工程都在使用它来进行监控，有关详细介绍可以查看官网：<a href="https://prometheus.io/docs/introduction/overview/。" target="_blank" rel="noopener">https://prometheus.io/docs/introduction/overview/。</a></p>
+<h2 id="2-有关Grafana"><a href="#2-有关Grafana" class="headerlink" title="2.有关Grafana"></a>2.有关Grafana</h2><p>Grafana是一个开源监控利器，如图所示。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17yjid0d4j30im096dis.jpg" alt></p>
+<p>从图中就可以看出来，使用Grafana监控很高大上，提供了很多可视化的图标。</p>
+<p>官网地址：<a href="https://grafana.com/" target="_blank" rel="noopener">https://grafana.com/</a></p>
+<h2 id="3-SpringBoot使用Prometheus"><a href="#3-SpringBoot使用Prometheus" class="headerlink" title="3.SpringBoot使用Prometheus"></a>3.SpringBoot使用Prometheus</h2><h3 id="3-1-依赖内容"><a href="#3-1-依赖内容" class="headerlink" title="3.1 依赖内容"></a>3.1 依赖内容</h3><p>在SpringBoot中使用Prometheus其实很简单，不需要配置太多的东西，在pom文件中加入依赖，完整内容如下所示。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">&lt;? xml version = "1.0"encoding = "UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span> = <span class="string">"http://maven.apache.org/POM/4.0.0"</span><span class="attr">xmlns:xsi</span> = <span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span><span class="attr">xsi:schemaLocation</span> = <span class="string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">	<span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span> 4.0.0 <span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">	    </span><br><span class="line">	<span class="tag">&lt;<span class="name">parent</span>&gt;</span> </span><br><span class="line">		<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> org.springframework.boot <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span> </span><br><span class="line">		<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> spring-boot-starter-parent <span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span> </span><br><span class="line">		<span class="tag">&lt;<span class="name">version</span>&gt;</span> 2.1.3.RELEASE <span class="tag">&lt;/<span class="name">version</span>&gt;</span> </span><br><span class="line">		<span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span> </span><br><span class="line">	<span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">	    </span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> com.dalaoyang <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> springboot2_prometheus <span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span> 0.0.1-SNAPSHOT <span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span> springboot2_prometheus <span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">description</span>&gt;</span> springboot2_prometheus <span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">java.version</span>&gt;</span> 1.8 <span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> org.springframework.boot <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> spring-boot-starter-actuator <span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> org.springframework.boot <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> spring-boot-starter-web <span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span>    </span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> org.springframework.boot <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> spring-boot-starter-test <span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">scope</span>&gt;</span> test <span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> io.micrometer <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> micrometer-registry-prometheus <span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">version</span>&gt;</span> 1.1.3 <span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> org.springframework.boot <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span> </span><br><span class="line">				<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-2-配置文件"><a href="#3-2-配置文件" class="headerlink" title="3.2 配置文件"></a>3.2 配置文件</h3><p>配置文件中加入配置，这里就只进行一些简单配置，management.metrics.tags.application属性是本文配合Grafana的Dashboard设置的，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">spring.application.name=springboot_prometheus</span><br><span class="line">management.endpoints.web.exposure.include=*</span><br><span class="line">management.metrics.tags.application=$&#123;spring.application.name&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-设置application"><a href="#3-3-设置application" class="headerlink" title="3.3 设置application"></a>3.3 设置application</h3><p>修改启动类，如下所示.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Springboot2PrometheusApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String [] args )</span> </span>&#123;</span><br><span class="line">	        </span><br><span class="line">		SpringApplication.run (Springboot2PrometheusApplication.class, args );</span><br><span class="line">	    </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">	<span class="meta">@Bean</span></span><br><span class="line">	<span class="function">MeterRegistryCustomizer&lt;MeterRegistry&gt; <span class="title">configurer</span> <span class="params">(@Value(<span class="string">"$&#123;spring.application.name&#125;"</span>)</span>String applicationName) </span>&#123;</span><br><span class="line"></span><br><span class="line">	        </span><br><span class="line">		<span class="keyword">return</span> (registry ) -&gt; registry.config().commonTags(<span class="string">"application"</span>, applicationName);</span><br><span class="line">	    </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>SpringBoot项目到这里就配置完成了，启动项目，访问<a href="http://localhost:8080/actuator/prometheus，如图所示，可以看到一些度量指标。" target="_blank" rel="noopener">http://localhost:8080/actuator/prometheus，如图所示，可以看到一些度量指标。</a></p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17ykbao18j30iv0am0y2.jpg" alt></p>
+<h2 id="4-Prometheus配置"><a href="#4-Prometheus配置" class="headerlink" title="4.Prometheus配置"></a>4.Prometheus配置</h2><h3 id="4-1-配置应用"><a href="#4-1-配置应用" class="headerlink" title="4.1 配置应用"></a>4.1 配置应用</h3><p>在prometheus配置监控我们的SpringBoot应用，完整配置如下所示。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my global config</span></span><br><span class="line"></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line"><span class="attr">  scrape_interval:</span> <span class="number">15</span><span class="string">s</span> <span class="comment"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span></span><br><span class="line"><span class="attr">  evaluation_interval:</span> <span class="number">15</span><span class="string">s</span> <span class="comment"># Evaluate rules every 15 seconds. The default is every 1 minute.</span></span><br><span class="line">  <span class="comment"># scrape_timeout is set to the global default (10s).</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Alertmanager configuration</span></span><br><span class="line"><span class="attr">alerting:</span> </span><br><span class="line"><span class="attr">  alertmanagers:</span> </span><br><span class="line"><span class="attr">  - static_configs:</span></span><br><span class="line"><span class="attr">    - targets:</span></span><br><span class="line">      <span class="comment"># - alertmanager:9093</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Load rules once and periodically evaluate them according to the global 'evaluation_interval'.</span></span><br><span class="line"><span class="attr">rule_files:</span></span><br><span class="line">  <span class="comment"># - "first_rules.yml"</span></span><br><span class="line">  <span class="comment"># - "second_rules.yml"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="comment"># Here it's Prometheus itself.</span></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">    - targets:</span> <span class="string">['127.0.0.1:9090']</span></span><br><span class="line"><span class="comment">###以下内容为SpringBoot应用配置</span></span><br><span class="line"><span class="attr">  -job_name:</span> <span class="string">'springboot_prometheus'</span></span><br><span class="line"><span class="attr">   scrape_interval:</span> <span class="number">5</span><span class="string">s</span></span><br><span class="line"><span class="attr">   metrics_path:</span> <span class="string">'/actuator/prometheus'</span></span><br><span class="line"><span class="attr">   static_configs:</span>     </span><br><span class="line"><span class="attr">     - targets:</span><span class="string">['127.0.0.1:8080']</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-2-启动Prometheus"><a href="#4-2-启动Prometheus" class="headerlink" title="4.2 启动Prometheus"></a>4.2 启动Prometheus</h3><p>启动Prometheus，浏览器访问，查看Prometheus页面，如图所示。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17yky4niwj30iv07p74t.jpg" alt></p>
+<p>点击如图所示位置，可以查看Prometheus监控的应用。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17ylrjlpej30j508lq3o.jpg" alt></p>
+<p>列表中UP的页面为存活的实例，如图所示。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17ymjh93hj30jc088dhb.jpg" alt></p>
+<p>也可以查看很多指数，如下所示。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17yn3ua81j30j10b2ae5.jpg" alt></p>
+<h2 id="5-Grafana配置"><a href="#5-Grafana配置" class="headerlink" title="5.Grafana配置"></a>5.Grafana配置</h2><p>启动Grafana，配置Prometheus数据源，这里以ID是4701的Doshboard为例（地址：<a href="https://grafana.com/dashboards/4701）如图。" target="_blank" rel="noopener">https://grafana.com/dashboards/4701）如图。</a></p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17ynrawepj30jg09aq4m.jpg" alt></p>
+<p>在Grafana内点击如图所示import按钮</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17yoog6cjj30jm0950vf.jpg" alt></p>
+<p>在如图所示位置填写4701，然后点击load。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17yp93tv8j30j709mt93.jpg" alt></p>
+<p>接下来导入Doshboard。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17yppvid2j30j609cq3y.jpg" alt></p>
+<p>导入后就可以看到我们的SpringBoot项目对应的指标图表了，如图。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006BiJ7dly1g17yq4eqplj30j9098tbk.jpg" alt></p>
+<h2 id="6-源码"><a href="#6-源码" class="headerlink" title="6.源码"></a>6.源码</h2><p>源码地址：<a href="https://gitee.com/dalaoyang/springboot_learn/tree/master/springboot2_prometheus" target="_blank" rel="noopener">https://gitee.com/dalaoyang/springboot_learn/tree/master/springboot2_prometheus</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://wumingsheng.github.io/2019/03/18/SpringBoot最流行的16条实践解读/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -670,7 +865,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
