@@ -5,8 +5,8 @@
 
 # Site
 
-- [mysql](https://mkdocs-mysql.readthedocs.io/en/latest/) https://wumingsheng.github.io/mkdocs_mysql/
-- [git](https://mkdocs-git.readthedocs.io/en/latest/)
+- [mysql](https://wumingsheng.github.io/mkdocs_mysql/) 
+- [git](https://wumingsheng.github.io/mkdocs_git/) 
 
 
 
